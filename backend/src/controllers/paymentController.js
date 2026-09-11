@@ -32,14 +32,13 @@ function normalizeCourseKey(value) {
 }
 
 const COURSE_CATALOG = Object.freeze({
-  "basic drone program": Object.freeze({ canonicalName: "Basic Drone Program", originalInr: 5000, discountPercent: 40 }),
-  "fixed wing drone": Object.freeze({ canonicalName: "Fixed Wing Drone", originalInr: 10000, discountPercent: 50 }),
-  "multicopter drone": Object.freeze({ canonicalName: "Multicopter Drone", originalInr: 10000, discountPercent: 50 }),
-  "ai in drone": Object.freeze({ canonicalName: "AI in Drone", originalInr: 10000, discountPercent: 50 }),
+  "basic drone program": Object.freeze({ canonicalName: "Basic Drone Program", originalInr: 5000 }),
+  "fixed wing drone": Object.freeze({ canonicalName: "Fixed Wing Drone", originalInr: 10000 }),
+  "multicopter drone": Object.freeze({ canonicalName: "Multicopter Drone", originalInr: 10000 }),
+  "ai in drone": Object.freeze({ canonicalName: "AI in Drone", originalInr: 10000 }),
   "frame designing for uavs": Object.freeze({
     canonicalName: "Frame Designing for UAVs",
-    originalInr: 25000,
-    discountPercent: 0
+    originalInr: 25000
   })
 });
 
@@ -60,15 +59,12 @@ function getCatalogCoursePricing(courseName) {
   const base = COURSE_CATALOG[resolvedKey];
   if (!base) return null;
 
-  const discountInr = Math.round((Number(base.originalInr) * Number(base.discountPercent || 0)) / 100);
-  const payableInr = Math.max(0, Number(base.originalInr) - discountInr);
+  const payableInr = Math.max(0, Number(base.originalInr));
 
   return {
     key: resolvedKey,
     canonicalName: base.canonicalName,
     originalInr: Number(base.originalInr),
-    discountPercent: Number(base.discountPercent || 0),
-    discountInr,
     payableInr,
     payablePaise: Math.round(payableInr * 100)
   };
@@ -97,15 +93,11 @@ async function resolveCoursePricing({ courseId, courseName }) {
 
   if (course) {
     const originalInr = Number(course.price) || 0;
-    const discountPercent = Math.min(100, Math.max(0, Number(course.discountPercent) || 0));
-    const discountInr = Math.round((originalInr * discountPercent) / 100);
-    const payableInr = Math.max(0, originalInr - discountInr);
+    const payableInr = Math.max(0, originalInr);
     return {
       courseId: course.id,
       canonicalName: course.title,
       originalInr,
-      discountPercent,
-      discountInr,
       payableInr,
       payablePaise: Math.round(payableInr * 100)
     };
@@ -351,8 +343,6 @@ async function enrollStudent(req, res) {
       currency: "INR",
       pricing: {
         originalInr: pricing.originalInr,
-        discountInr: pricing.discountInr,
-        discountPercent: pricing.discountPercent,
         payableInr: pricing.payableInr
       },
       status: "created",
@@ -468,7 +458,6 @@ async function createOrder(req, res) {
       ...(billingPhone ? { billingPhone } : {}),
       ...(email ? { email } : {}),
       originalInr: String(pricing.originalInr),
-      discountInr: String(pricing.discountInr),
       payableInr: String(pricing.payableInr)
     }
   });
@@ -483,8 +472,6 @@ async function createOrder(req, res) {
     userEmail: req.user?.email || email || null,
     pricing: {
       originalInr: pricing.originalInr,
-      discountInr: pricing.discountInr,
-      discountPercent: pricing.discountPercent,
       payableInr: pricing.payableInr
     },
     userId: req.user?.id || null,
@@ -509,8 +496,6 @@ async function createOrder(req, res) {
       currency: String(order.currency || "INR"),
       pricing: {
         originalInr: pricing.originalInr,
-        discountInr: pricing.discountInr,
-        discountPercent: pricing.discountPercent,
         payableInr: pricing.payableInr
       },
       status: "created"
@@ -525,8 +510,6 @@ async function createOrder(req, res) {
     courseName: pricing.canonicalName,
     pricing: {
       originalInr: pricing.originalInr,
-      discountInr: pricing.discountInr,
-      discountPercent: pricing.discountPercent,
       payableInr: pricing.payableInr
     }
   });

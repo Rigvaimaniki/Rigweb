@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle2, Info, ShieldCheck, X } from "lucide-react";
 import type { Course } from "./types";
 import { getCourseImages, getCourseMoreInfo } from "./courseContent";
-import { getDiscountInr, getPayableInr, inr } from "./utils";
+import { getPayableInr, inr } from "./utils";
 
 function AutoScrollImages({
   images,
@@ -75,9 +75,7 @@ function CourseCard({
   isMoreOpen: boolean;
   onToggleMore: () => void;
 }) {
-  const discountInr = getDiscountInr(course.pricing.originalInr, course.pricing.discountPercent);
-  const payableInr = getPayableInr(course.pricing.originalInr, course.pricing.discountPercent);
-  const hasDiscount = discountInr > 0;
+  const payableInr = getPayableInr(course.pricing.originalInr);
   const images = useMemo(() => getCourseImages(course), [course]);
   const objectiveItems = useMemo(() => course.features.slice(0, 4), [course.features]);
 
@@ -115,13 +113,7 @@ function CourseCard({
           <p className="text-white/58">Price</p>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1 min-h-[2.25rem]">
             <span className="font-semibold text-white">{inr(payableInr)}</span>
-            {hasDiscount && (
-              <>
-                <span className="text-white/60 line-through">{inr(course.pricing.originalInr)}</span>
-                <span className="text-[#D4AF37] font-semibold">-{course.pricing.discountPercent}%</span>
-              </>
-            )}
-            {!hasDiscount && <span className="opacity-0 select-none">placeholder</span>}
+            <span className="opacity-0 select-none">placeholder</span>
           </div>
         </div>
       </div>
@@ -162,7 +154,7 @@ function CourseCard({
 function CourseMorePanel({ course, onClose }: { course: Course; onClose: () => void }) {
   const more = getCourseMoreInfo(course);
   const images = getCourseImages(course);
-  const payableInr = getPayableInr(course.pricing.originalInr, course.pricing.discountPercent);
+  const payableInr = getPayableInr(course.pricing.originalInr);
 
   return (
     <motion.div

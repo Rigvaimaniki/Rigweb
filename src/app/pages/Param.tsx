@@ -40,7 +40,7 @@ function toCourse(apiCourse: ApiCourse): Course {
     description: apiCourse.description || "",
     duration: apiCourse.duration,
     features: apiCourse.features || [],
-    pricing: { originalInr: Number(apiCourse.price) || 0, discountPercent: Number(apiCourse.discountPercent) || 0 },
+    pricing: { originalInr: Number(apiCourse.price) || 0 },
     images: apiCourse.images || [],
   };
 }
@@ -271,7 +271,7 @@ export function Param() {
          amount: number;
          currency: string;
          courseName: string;
-         pricing: { originalInr: number; discountInr: number; payableInr: number; discountPercent: number };
+         pricing: { originalInr: number; payableInr: number };
        }>("/payments/create-order", {
          method: "POST",
          headers: { "Content-Type": "application/json" },
@@ -454,7 +454,7 @@ export function Param() {
           amount: number;
           currency: string;
           courseName: string;
-          pricing: { originalInr: number; discountInr: number; payableInr: number; discountPercent: number };
+          pricing: { originalInr: number; payableInr: number };
         }>("/payments/create-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

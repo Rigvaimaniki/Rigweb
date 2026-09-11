@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle2, X } from "lucide-react";
 import type { Course } from "./types";
-import { getDiscountInr, getPayableInr, inr } from "./utils";
+import { getPayableInr, inr } from "./utils";
 
 export function EnrollmentModals({
   courses,
@@ -119,12 +119,12 @@ export function EnrollmentModals({
 
                   <h3 className="text-xl font-semibold">Select a course</h3>
                   <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                    Prices include the current discount where applicable.
+                    Select the course you want to enroll in.
                   </p>
 
                   <div className="mt-5 grid grid-cols-1 gap-3">
                     {courses.map((course) => {
-                      const payableInr = getPayableInr(course.pricing.originalInr, course.pricing.discountPercent);
+                      const payableInr = getPayableInr(course.pricing.originalInr);
                       return (
                         <button
                           key={course.id}
@@ -197,7 +197,7 @@ export function EnrollmentModals({
                           {billingCourse.category} • {billingCourse.duration}
                         </span>
                         <span className="font-semibold">
-                          {inr(getPayableInr(billingCourse.pricing.originalInr, billingCourse.pricing.discountPercent))}
+                          {inr(getPayableInr(billingCourse.pricing.originalInr))}
                         </span>
                       </div>
                     </div>
@@ -411,8 +411,7 @@ export function EnrollmentModals({
                   </button>
 
                   {(() => {
-                    const discountInr = getDiscountInr(selectedCourse.pricing.originalInr, selectedCourse.pricing.discountPercent);
-                    const payableInr = getPayableInr(selectedCourse.pricing.originalInr, selectedCourse.pricing.discountPercent);
+                    const payableInr = getPayableInr(selectedCourse.pricing.originalInr);
                     return (
                       <>
                         <h3 className="text-xl font-semibold">Checkout</h3>
@@ -424,8 +423,6 @@ export function EnrollmentModals({
                             <span className="font-semibold">{inr(selectedCourse.pricing.originalInr)}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-neutral-600 dark:text-neutral-400">Discount</span>
-                            <span className="font-semibold">-{inr(discountInr)}</span>
                           </div>
                           <div className="h-px bg-neutral-200 dark:bg-neutral-800" />
                           <div className="flex items-center justify-between text-base">

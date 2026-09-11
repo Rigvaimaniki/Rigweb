@@ -9,7 +9,6 @@ export type Course = {
   features: string[];
   pricing: {
     originalInr: number;
-    discountPercent: number;
   };
   images?: string[];
 };
@@ -19,7 +18,6 @@ export type ApiCourse = {
   title: string;
   description: string;
   price: number;
-  discountPercent: number;
   duration: string;
   category: "basic" | "moderate" | "advance";
   features: string[];

@@ -33,7 +33,6 @@ type Course = {
   title: string;
   description: string;
   price: number;
-  discountPercent: number;
   duration: string;
   category: CourseCategory;
   features: string[];
@@ -96,7 +95,6 @@ type CourseForm = {
   title: string;
   description: string;
   price: string;
-  discountPercent: string;
   duration: string;
   category: CourseCategory;
   featuresText: string;
@@ -109,7 +107,6 @@ const initialCourseForm: CourseForm = {
   title: "",
   description: "",
   price: "",
-  discountPercent: "0",
   duration: "",
   category: "basic",
   featuresText: "",
@@ -182,7 +179,6 @@ export function Admin() {
           title: course.title,
           description: course.description,
           price: String(course.price),
-          discountPercent: String(course.discountPercent ?? 0),
           duration: course.duration,
           category: course.category,
           featuresText: (course.features || []).join("\n"),
@@ -286,7 +282,6 @@ export function Admin() {
         body: JSON.stringify({
           ...newCourse,
           price: Number(newCourse.price),
-          discountPercent: Number(newCourse.discountPercent || 0),
           features: parseFeatures(newCourse.featuresText),
           images: parseFeatures(newCourse.imagesText),
           isActive: newCourse.isActive,
@@ -300,7 +295,6 @@ export function Admin() {
           title: res.course.title,
           description: res.course.description,
           price: String(res.course.price),
-          discountPercent: String(res.course.discountPercent ?? 0),
           duration: res.course.duration,
           category: res.course.category,
           featuresText: (res.course.features || []).join("\n"),
@@ -359,7 +353,6 @@ export function Admin() {
           title: draft.title,
           description: draft.description,
           price: Number(draft.price),
-          discountPercent: Number(draft.discountPercent || 0),
           duration: draft.duration,
           category: draft.category,
           features: parseFeatures(draft.featuresText),
@@ -390,7 +383,6 @@ export function Admin() {
           title: res.course.title,
           description: res.course.description,
           price: String(res.course.price),
-          discountPercent: String(res.course.discountPercent ?? 0),
           duration: res.course.duration,
           category: res.course.category,
           featuresText: (res.course.features || []).join("\n"),
@@ -846,15 +838,7 @@ export function Admin() {
               min={0}
               className="px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent"
             />
-            <input
-              value={newCourse.discountPercent}
-              onChange={(e) => setNewCourse((prev) => ({ ...prev, discountPercent: e.target.value }))}
-              placeholder="Discount %"
-              type="number"
-              min={0}
-              max={100}
-              className="px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent"
-            />
+
             <input
               value={newCourse.duration}
               onChange={(e) => setNewCourse((prev) => ({ ...prev, duration: e.target.value }))}
@@ -940,14 +924,7 @@ export function Admin() {
                       onChange={(e) => updateCourseDraft(course.id, "price", e.target.value)}
                       className="px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent"
                     />
-                    <input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={draft?.discountPercent || ""}
-                      onChange={(e) => updateCourseDraft(course.id, "discountPercent", e.target.value)}
-                      className="px-3 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent"
-                    />
+
                     <input
                       value={draft?.duration || ""}
                       onChange={(e) => updateCourseDraft(course.id, "duration", e.target.value)}
@@ -1045,17 +1022,7 @@ export function Admin() {
                         {draft.category} • {draft.duration}
                       </div>
                       <div className="text-sm mt-2">
-                        INR{" "}
-                        {Math.max(
-                          0,
-                          Number(draft.price || 0) -
-                            Math.round((Number(draft.price || 0) * Number(draft.discountPercent || 0)) / 100)
-                        )}
-                        {Number(draft.discountPercent || 0) > 0 && (
-                          <span className="text-xs text-neutral-600 dark:text-neutral-400">
-                            {" "}(was INR {draft.price}, {draft.discountPercent}% off)
-                          </span>
-                        )}
+                        INR {Math.max(0, Number(draft.price || 0))}
                       </div>
                       {(draft.imagesText || "").trim() && (
                         <div className="mt-3 flex gap-2">

@@ -122,7 +122,6 @@ const createCourseSchema = z.object({
   title: z.string().trim().min(2).max(120),
   description: z.string().trim().min(5).max(2000),
   price: z.coerce.number().min(0),
-  discountPercent: z.coerce.number().int().min(0).max(100).optional(),
   duration: z.string().trim().min(2).max(80),
   category: z.enum(["basic", "moderate", "advance"]),
   features: z.array(z.string().trim().min(1).max(120)).max(40).optional(),

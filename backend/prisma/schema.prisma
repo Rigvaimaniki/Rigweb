@@ -289,7 +289,6 @@ model Course {
   title       String
   description String
   price       Float
-  discountPercent Int        @default(0)
   duration    String
   category    CourseCategory
   features    String[]       @default([])

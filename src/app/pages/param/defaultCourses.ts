@@ -8,7 +8,7 @@ export const DEFAULT_PARAM_COURSES: Course[] = [
     description: "Drone fundamentals, basic building, components understanding, flight basics.",
     duration: "24 Hours",
     features: ["Drone fundamentals", "Basic drone building", "Components understanding", "Flight basics"],
-    pricing: { originalInr: 5000, discountPercent: 40 },
+    pricing: { originalInr: 5000 },
     images: ["B1", "B2", "B3"]
   },
   {
@@ -18,7 +18,7 @@ export const DEFAULT_PARAM_COURSES: Course[] = [
     description: "Fixed wing design, aerodynamics basics, assembly and testing, flight control concepts.",
     duration: "40 Hours",
     features: ["Fixed wing drone design", "Aerodynamics basics", "Assembly & testing", "Flight control concepts"],
-    pricing: { originalInr: 10000, discountPercent: 50 },
+    pricing: { originalInr: 10000 },
     images: ["F1", "F2", "F3"]
   },
   {
@@ -28,7 +28,7 @@ export const DEFAULT_PARAM_COURSES: Course[] = [
     description: "Multicopter design, lift & propulsion basics, assembly and testing, flight control concepts.",
     duration: "40 Hours",
     features: ["Multicopter drone design", "Lift & propulsion basics", "Assembly & testing", "Flight control concepts"],
-    pricing: { originalInr: 10000, discountPercent: 50 },
+    pricing: { originalInr: 10000 },
     images: ["M1", "M2", "M3"]
   },
   {
@@ -38,7 +38,7 @@ export const DEFAULT_PARAM_COURSES: Course[] = [
     description: "AI fundamentals in drones, computer vision basics, autonomous flight concepts, applications.",
     duration: "40 Hours",
     features: ["AI fundamentals in drones", "Computer vision basics", "Autonomous flight concepts", "Real-world applications"],
-    pricing: { originalInr: 10000, discountPercent: 50 },
+    pricing: { originalInr: 10000 },
     images: ["A1", "A2"]
   },
   {
@@ -48,7 +48,7 @@ export const DEFAULT_PARAM_COURSES: Course[] = [
     description: "Specialized training for advanced design workflows and long-term UAV frame design.",
     duration: "12 months",
     features: ["Frame design fundamentals", "Material selection", "Strength & stability considerations", "Design validation workflow"],
-    pricing: { originalInr: 25000, discountPercent: 0 },
+    pricing: { originalInr: 25000 },
     images: ["FD1", "FD2", "FD3"]
   }
 ];
