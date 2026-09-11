@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Prisma generated files
+/generated/prisma
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# Uploads and temporary runtime files
+tmp_uploads/
+uploads/
+*.tmp
+
+# Logs
+*.log
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

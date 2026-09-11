@@ -1,0 +1,408 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+  super_admin
+}
+
+enum CourseCategory {
+  basic
+  moderate
+  advance
+}
+
+enum CourseEnrollmentStatus {
+  created
+  paid
+}
+
+enum PaymentAttemptStatus {
+  created
+  paid
+  failed
+  cancelled
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         Role     @default(user)
+  emailVerifiedAt DateTime?
+  mobileCountry String  @default("IN")
+  mobilePhone  String?
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+  refreshToken String?  // store hashed refresh token (recommended)
+  loginEvents  LoginEvent[]
+  enrollments  CourseEnrollment[]
+  paymentAttempts CoursePaymentAttempt[]
+  adminAuditLogs AdminAuditLog[] @relation("AdminAuditActor")
+}
+
+model EmployeeProfile {
+  id                     String   @id @default(uuid())
+  employeeId             String   @unique
+  fullName               String
+  email                  String   @unique
+  mobileNumber           String?
+  alternateContactNumber String?
+  residentialAddress     String?
+  emergencyContactPerson String?
+  emergencyContactNumber String?
+  profilePhotographUrl   String?
+  panNumber              String?
+  aadhaarNumber          String?
+  accountNumber          String?
+  ifscCode               String?
+  bankName               String?
+  branchName             String?
+  department             String?
+  designation            String?
+  reportingManager       String?
+  assignedShift          String?
+  officeLocationId       String?
+  shiftId                String?
+  employmentType         String
+  employmentStatus       String   @default("Active")
+  dateOfJoining          DateTime?
+  dateOfRelieving        DateTime?
+  collegeName            String?
+  universityName         String?
+  studentId              String?
+  nocUrl                 String?
+  internshipStartDate    DateTime?
+  internshipEndDate      DateTime?
+  internshipDuration     String?
+  stipendAmount          Float?
+  mentorAssigned         String?
+  internshipCertificateStatus String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  attendanceRecords AttendanceRecord[]
+  documents         EmployeeDocument[]
+  lifecycleHistory  EmployeeLifecycleHistory[]
+  leaveRequests     LeaveRequest[]
+  officeLocation    OfficeLocation? @relation(fields: [officeLocationId], references: [id], onDelete: SetNull)
+  shift             Shift?          @relation(fields: [shiftId], references: [id], onDelete: SetNull)
+  shiftHistory      ShiftAssignmentHistory[]
+
+  @@index([email])
+  @@index([department])
+  @@index([employmentType])
+  @@index([employmentStatus])
+  @@index([officeLocationId])
+  @@index([shiftId])
+}
+
+model AttendanceRecord {
+  id                String   @id @default(uuid())
+  employeeProfileId String
+  officeLocationId  String?
+  attendanceDate    DateTime
+  checkInAt         DateTime?
+  checkOutAt        DateTime?
+  checkInLatitude   Float?
+  checkInLongitude  Float?
+  checkOutLatitude  Float?
+  checkOutLongitude Float?
+  checkInIp         String?
+  checkOutIp        String?
+  checkInDevice     String?
+  checkOutDevice    String?
+  status            String   @default("Present")
+  lateMinutes       Int      @default(0)
+  earlyDepartureMinutes Int  @default(0)
+  overtimeMinutes   Int      @default(0)
+  totalWorkingMinutes Int    @default(0)
+  isManual          Boolean  @default(false)
+  remarks           String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  employeeProfile EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+  officeLocation  OfficeLocation?  @relation(fields: [officeLocationId], references: [id], onDelete: SetNull)
+
+  @@unique([employeeProfileId, attendanceDate])
+  @@index([attendanceDate])
+  @@index([officeLocationId])
+}
+
+model EmployeeDocument {
+  id                String   @id @default(uuid())
+  employeeProfileId String
+  category          String
+  fileName          String
+  fileUrl           String
+  uploadedByUserId  String?
+  createdAt         DateTime @default(now())
+
+  employeeProfile EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+
+  @@index([employeeProfileId])
+  @@index([category])
+}
+
+model EmployeeLifecycleHistory {
+  id                String   @id @default(uuid())
+  employeeProfileId String
+  previousRole      String?
+  newRole           String
+  effectiveDate     DateTime @default(now())
+  remarks           String?
+  changedByUserId   String?
+  createdAt         DateTime @default(now())
+
+  employeeProfile EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+
+  @@index([employeeProfileId])
+  @@index([effectiveDate])
+}
+
+model OfficeLocation {
+  id             String   @id @default(uuid())
+  officeName     String
+  officeAddress  String
+  latitude       Float
+  longitude      Float
+  allowedRadiusMeters Int @default(100)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  employees         EmployeeProfile[]
+  attendanceRecords AttendanceRecord[]
+
+  @@index([isActive])
+}
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Designation {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  groupName String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Shift {
+  id                    String   @id @default(uuid())
+  shiftName             String   @unique
+  startTime             String?
+  endTime               String?
+  requiredWorkingMinutes Int?
+  gracePeriodMinutes    Int      @default(0)
+  breakDurationMinutes  Int      @default(0)
+  overtimeThresholdMinutes Int    @default(0)
+  weeklyOffDays         String[] @default([])
+  isFlexible            Boolean  @default(false)
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  employees    EmployeeProfile[]
+}
+
+model ShiftAssignmentHistory {
+  id                String   @id @default(uuid())
+  employeeProfileId String
+  previousShift     String?
+  newShift          String
+  effectiveDate     DateTime @default(now())
+  changedByUserId   String?
+  remarks           String?
+  createdAt         DateTime @default(now())
+
+  employeeProfile EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+
+  @@index([employeeProfileId])
+  @@index([effectiveDate])
+}
+
+model LeaveRequest {
+  id                String   @id @default(uuid())
+  employeeProfileId String
+  leaveType         String
+  startDate         DateTime
+  endDate           DateTime
+  reason            String?
+  status            String   @default("Pending")
+  reviewedByUserId  String?
+  reviewedAt        DateTime?
+  reviewRemarks     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  employeeProfile EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+
+  @@index([employeeProfileId])
+  @@index([status])
+  @@index([startDate])
+}
+
+model DocumentCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LoginEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Course {
+  id          String         @id @default(uuid())
+  title       String
+  description String
+  price       Float
+  discountPercent Int        @default(0)
+  duration    String
+  category    CourseCategory
+  features    String[]       @default([])
+  images      String[]       @default([])
+  isActive    Boolean        @default(true)
+  sortOrder   Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  enrollments     CourseEnrollment[]
+  paymentAttempts CoursePaymentAttempt[]
+
+  @@index([category])
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+model CourseEnrollment {
+  id           String               @id @default(uuid())
+  userId       String?
+  userEmail    String?
+  billingName  String?
+  billingPhone String?
+
+  // New enrollment fields
+  firstName    String?
+  lastName     String?
+  gender       String?
+  email        String?
+  dateOfBirth  DateTime?
+  city         String?
+  state        String?
+  preferredBatch String? // morning, afternoon, evening
+  experienceLevel String? // beginner, prior_knowledge
+  profession   String?
+  college      String?
+  agreedToFollowUp Boolean @default(false)
+
+  courseId   String?
+  courseName String
+  orderId    String               @unique
+  paymentId  String?
+
+  amountPaise Int
+  currency    String               @default("INR")
+  pricing     Json?
+
+  status    CourseEnrollmentStatus @default(created)
+  createdAt DateTime               @default(now())
+  paidAt    DateTime?
+  paymentReceived Boolean          @default(false)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  course Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([courseName])
+  @@index([courseId])
+}
+
+model CoursePaymentAttempt {
+  id           String              @id @default(uuid())
+  orderId      String?             @unique
+  paymentId    String?
+
+  userId       String?
+  userEmail    String?
+  billingName  String?
+  billingPhone String?
+
+  courseId   String?
+  courseName  String?
+  amountPaise Int?
+  currency    String?
+  pricing     Json?
+
+  status        PaymentAttemptStatus @default(created)
+  failureStage  String?
+  failureReason String?
+  failureRaw    Json?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  paidAt      DateTime?
+  failedAt    DateTime?
+  cancelledAt DateTime?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  course Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([courseId])
+}
+
+model AdminAuditLog {
+  id          String   @id @default(uuid())
+  actorId     String
+  targetUserId String?
+  action      String
+  meta        Json?
+  ip          String?
+  oldValue    Json?
+  newValue    Json?
+  createdAt   DateTime @default(now())
+
+  actor User @relation("AdminAuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([actorId])
+  @@index([targetUserId])
+  @@index([action])
+  @@index([createdAt])
+}

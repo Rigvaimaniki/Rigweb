@@ -1,0 +1,31 @@
+﻿            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="text-center p-8 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800"
+            >
+              <div className="flex justify-center mb-4">
+                <a
+                  href="https://www.linkedin.com/in/rigvaimaniki-technologies-5139423b9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-full bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition-colors p-2"
+                  aria-label="Open LinkedIn profile"
+                >
+                  <Linkedin size={34} />
+                </a>
+              </div>
+              <h3 className="mb-2">LinkedIn</h3>
+              <a
+                href="https://www.linkedin.com/in/rigvaimaniki-technologies-5139423b9"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-neutral-600 dark:text-neutral-400 hover:text-cyan-600 dark:hover:text-cyan-600 transition-colors"
+              >
+                Rigvaimaniki Technologies
+              </a>
+            </motion.div>
+          </div>
